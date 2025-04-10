@@ -1,0 +1,802 @@
+{
+	"info": {
+		"_postman_id": "a6d220e3-0937-47c0-85d1-73ab63a194f7",
+		"name": "crudRestCollection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "43131535"
+	},
+	"item": [
+		{
+			"name": "postNewAcc",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"function generatorEmail() {",
+							"    const randomNumber = Math.floor(Math.random() * (100000000 - 1) + 1);",
+							"    const randomEmail = \"test\" + randomNumber + \"@test.com\";",
+							"    const randomUser = \"test\" + randomNumber;",
+							"    const password = \"password123\";",
+							"    pm.collectionVariables.set(\"emailTest\", randomEmail);",
+							"    pm.collectionVariables.set(\"passwordTest\", password);",
+							"    pm.collectionVariables.set(\"usernameTest\", randomUser);",
+							"}",
+							"generatorEmail()",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let token;",
+							"token = pm.response.json().user.token",
+							"console.log(token)",
+							"// pm.collectionVariables.set(\"tokenTest\", token);",
+							"",
+							"pm.test('should verify response code', () => {",
+							"    pm.expect(pm.response.code).to.eql(201)",
+							"})",
+							"",
+							"pm.test('should verify response time 1000', () => {",
+							"    pm.expect(pm.response.responseTime).to.lessThan(1000)",
+							"})",
+							"",
+							"pm.test('should verify response status ', () => {",
+							"    pm.expect(pm.response.status).to.eql(\"Created\")",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"user\": {\n        \"email\": \"{{emailTest}}\",\n        \"password\": \"{{passwordTest}}\",\n        \"username\": \"{{usernameTest}}\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{urlApi}}/users",
+					"host": [
+						"{{urlApi}}"
+					],
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "postLogin",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let token;",
+							"const usernameTest = pm.collectionVariables.get(\"usernameTest\");",
+							"",
+							"",
+							"pm.test(\"set global token after post to login endpoint\", () => {",
+							"    pm.response.to.have.status(200)",
+							"    pm.expect(pm.response.code).to.eql(200)",
+							"    token = pm.response.json().user.token",
+							"    pm.collectionVariables.set(\"tokenTest\", token);",
+							"})",
+							"",
+							"pm.test('should verify response time 1000', () => {",
+							"    pm.expect(pm.response.responseTime).to.lessThan(1000)",
+							"})",
+							"",
+							"pm.test('shourld verify response status', () => {",
+							"    pm.expect(pm.response.status).to.eql('OK')",
+							"})",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"user\": {\n        \"email\": \"{{emailTest}}\",  // you can take if from env variable created in Develoment env so select dev env to use it\n        \"password\": \"{{passwordTest}}\"  // you can take if from env variable created in Develoment env so select dev env to use it\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{urlApi}}/users/login",
+					"host": [
+						"{{urlApi}}"
+					],
+					"path": [
+						"users",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "postArticle",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const titleTest = pm.collectionVariables.get(\"titleTest\");",
+							"const bodyTest = pm.collectionVariables.get(\"bodyTest\");",
+							"const descriptionTest = pm.collectionVariables.get(\"descriptionTest\");",
+							"const usernameTest = pm.collectionVariables.get(\"usernameTest\");",
+							"const slugTest = pm.response.json().article.slug;",
+							"pm.collectionVariables.set(\"slugTest\", slugTest)",
+							"",
+							"pm.test(\"verify code\", () => {",
+							"    pm.expect(pm.response.code).to.eql(201)",
+							"})",
+							"",
+							"pm.test(\"should verify response status \", () => {",
+							"    pm.expect(pm.response.status).to.eql(\"Created\")",
+							"})",
+							"",
+							"pm.test(\"should verify response article title\", () => {",
+							"    pm.expect(pm.response.json().article.title).to.eql(titleTest)",
+							"})",
+							"",
+							"pm.test(\"should verify response body\", () => {",
+							"   pm.expect(pm.response.json().article.body).to.eql(bodyTest)",
+							"})",
+							"    ",
+							"pm.test(\"should verify response description\", () => {",
+							"   pm.expect(pm.response.json().article.description).to.eql(descriptionTest)",
+							"})",
+							"",
+							"pm.test(\"should verify response tag list is empty\", () => {",
+							"   pm.expect(pm.response.json().article.tagList).to.eql([])",
+							"})",
+							"",
+							"pm.test(\"should verify response author username\", () => {",
+							"   pm.expect(pm.response.json().article.author.username).to.eql(usernameTest)",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const helpNumber = Math.floor(Math.random() * (100000000 - 1) + 1)",
+							"pm.collectionVariables.set(\"helpNumber\", helpNumber);",
+							"pm.collectionVariables.set(\"titleTest\", \"titleTest\" + helpNumber);",
+							"pm.collectionVariables.set(\"descriptionTest\", \"descriptionTest\" + helpNumber);",
+							"pm.collectionVariables.set(\"bodyTest\", \"api req postman body\");",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "default"
+					},
+					{
+						"key": "Authorization",
+						"value": "Token {{tokenTest}}",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"article\": {\n        \"title\": \"{{titleTest}}\",\n        \"description\": \"{{descriptionTest}}\",\n        \"body\": \"{{bodyTest}}\",\n        \"tagList\": []\n    }\n}\n\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{urlApi}}/articles/",
+					"host": [
+						"{{urlApi}}"
+					],
+					"path": [
+						"articles",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getArticleCreated",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const titleTest = pm.collectionVariables.get(\"titleTest\");",
+							"const bodyTest = pm.collectionVariables.get(\"bodyTest\");",
+							"const descriptionTest = pm.collectionVariables.get(\"descriptionTest\");",
+							"const usernameTest = pm.collectionVariables.get(\"usernameTest\");",
+							"const slugTest = pm.collectionVariables.get(\"slugTest\");",
+							"",
+							"",
+							"pm.test(\"verify code\", () => {",
+							"    pm.expect(pm.response.code).to.eql(200)",
+							"})",
+							"",
+							"pm.test(\"should verify response status \", () => {",
+							"    pm.expect(pm.response.status).to.eql(\"OK\")",
+							"})",
+							"",
+							"pm.test(\"should verify response article title\", () => {",
+							"    pm.expect(pm.response.json().article.title).to.eql(titleTest)",
+							"})",
+							"",
+							"pm.test(\"should verify response body\", () => {",
+							"   pm.expect(pm.response.json().article.body).to.eql(bodyTest)",
+							"})",
+							"    ",
+							"pm.test(\"should verify response description\", () => {",
+							"   pm.expect(pm.response.json().article.description).to.eql(descriptionTest)",
+							"})",
+							"",
+							"pm.test(\"should verify response slug\", () => {",
+							"   pm.expect(pm.response.json().article.slug).to.eql(slugTest)",
+							"})",
+							"",
+							"pm.test(\"should verify response tag list is empty\", () => {",
+							"   pm.expect(pm.response.json().article.tagList).to.eql([])",
+							"})",
+							"",
+							"pm.test(\"should verify response author username\", () => {",
+							"   pm.expect(pm.response.json().article.author.username).to.eql(usernameTest)",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token {{tokenTest}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{urlApi}}/articles/{{slugTest}}",
+					"host": [
+						"{{urlApi}}"
+					],
+					"path": [
+						"articles",
+						"{{slugTest}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getArticles",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const titleTest = pm.collectionVariables.get(\"titleTest\");",
+							"const bodyTest = pm.collectionVariables.get(\"bodyTest\");",
+							"const descriptionTest = pm.collectionVariables.get(\"descriptionTest\");",
+							"const usernameTest = pm.collectionVariables.get(\"usernameTest\");",
+							"const slugTest = pm.collectionVariables.get(\"slugTest\");",
+							"",
+							"",
+							"pm.test(\"verify code\", () => {",
+							"    pm.expect(pm.response.code).to.eql(200)",
+							"})",
+							"",
+							"pm.test(\"should verify response status \", () => {",
+							"    pm.expect(pm.response.status).to.eql(\"OK\")",
+							"})",
+							"",
+							"pm.test(\"should verify response article title\", () => {",
+							"    pm.expect(pm.response.json().articles[0].title).to.eql(titleTest)",
+							"})",
+							"",
+							"pm.test(\"should verify response body\", () => {",
+							"   pm.expect(pm.response.json().articles[0].body).to.eql(bodyTest)",
+							"})",
+							"    ",
+							"pm.test(\"should verify response description\", () => {",
+							"   pm.expect(pm.response.json().articles[0].description).to.eql(descriptionTest)",
+							"})",
+							"",
+							"pm.test(\"should verify response slug\", () => {",
+							"   pm.expect(pm.response.json().articles[0].slug).to.eql(slugTest)",
+							"})",
+							"",
+							"pm.test(\"should verify response tag list is empty\", () => {",
+							"   pm.expect(pm.response.json().articles[0].tagList).to.eql([])",
+							"})",
+							"",
+							"pm.test(\"should verify response author username\", () => {",
+							"   pm.expect(pm.response.json().articles[0].author.username).to.eql(usernameTest)",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Token {{tokenTest}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{urlApi}}/articles/",
+					"host": [
+						"{{urlApi}}"
+					],
+					"path": [
+						"articles",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "updateArticle",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const titleTest = pm.collectionVariables.get(\"titleTest\");",
+							"const updatedArticleDesc = pm.collectionVariables.get(\"updatedArticleDesc\");",
+							"const updatedArticleBody = pm.collectionVariables.get(\"updatedArticleBody\");",
+							"const usernameTest = pm.collectionVariables.get(\"usernameTest\");",
+							"const slugTest = pm.collectionVariables.get(\"slugTest\");",
+							"",
+							"",
+							"pm.test(\"verify code\", () => {",
+							"    pm.expect(pm.response.code).to.eql(200)",
+							"})",
+							"",
+							"pm.test(\"should verify response status \", () => {",
+							"    pm.expect(pm.response.status).to.eql(\"OK\")",
+							"})",
+							"",
+							"pm.test(\"should verify response article title\", () => {",
+							"    pm.expect(pm.response.json().article.title).to.eql(titleTest)",
+							"})",
+							"",
+							"pm.test(\"should verify response body\", () => {",
+							"   pm.expect(pm.response.json().article.body).to.eql(updatedArticleBody)",
+							"})",
+							"    ",
+							"pm.test(\"should verify response description\", () => {",
+							"   pm.expect(pm.response.json().article.description).to.eql(updatedArticleDesc)",
+							"})",
+							"",
+							"pm.test(\"should verify response slug\", () => {",
+							"   pm.expect(pm.response.json().article.slug).to.eql(slugTest)",
+							"})",
+							"",
+							"pm.test(\"should verify response tag list is empty\", () => {",
+							"   pm.expect(pm.response.json().article.tagList).to.eql([])",
+							"})",
+							"",
+							"pm.test(\"should verify response author username\", () => {",
+							"   pm.expect(pm.response.json().article.author.username).to.eql(usernameTest)",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"updatedArticleBody\", \"Updated body\");",
+							"pm.collectionVariables.set(\"updatedArticleDesc\", \"Updated description\");",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token {{tokenTest}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"article\": {\n        \"title\": \"{{titleTest}}\",\n        \"description\": \"{{updatedArticleDesc}}\",\n        \"body\": \"{{updatedArticleBody}}\",\n        \"tagList\": [],\n        \"slug\": \"{{titleTest}}-21016\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{urlApi}}/articles/{{slugTest}}",
+					"host": [
+						"{{urlApi}}"
+					],
+					"path": [
+						"articles",
+						"{{slugTest}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getArticlesAfterUpdate",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const titleTest = pm.collectionVariables.get(\"titleTest\");",
+							"const updatedArticleDesc = pm.collectionVariables.get(\"updatedArticleDesc\");",
+							"const updatedArticleBody = pm.collectionVariables.get(\"updatedArticleBody\");",
+							"const usernameTest = pm.collectionVariables.get(\"usernameTest\");",
+							"const slugTest = pm.collectionVariables.get(\"slugTest\");",
+							"",
+							"",
+							"pm.test(\"verify code\", () => {",
+							"    pm.expect(pm.response.code).to.eql(200)",
+							"})",
+							"",
+							"pm.test(\"should verify response status \", () => {",
+							"    pm.expect(pm.response.status).to.eql(\"OK\")",
+							"})",
+							"",
+							"pm.test(\"should verify response article title\", () => {",
+							"    pm.expect(pm.response.json().articles[0].title).to.eql(titleTest)",
+							"})",
+							"",
+							"pm.test(\"should verify response body\", () => {",
+							"   pm.expect(pm.response.json().articles[0].body).to.eql(updatedArticleBody)",
+							"})",
+							"    ",
+							"pm.test(\"should verify response description\", () => {",
+							"   pm.expect(pm.response.json().articles[0].description).to.eql(updatedArticleDesc)",
+							"})",
+							"",
+							"pm.test(\"should verify response slug\", () => {",
+							"   pm.expect(pm.response.json().articles[0].slug).to.eql(slugTest)",
+							"})",
+							"",
+							"pm.test(\"should verify response tag list is empty\", () => {",
+							"   pm.expect(pm.response.json().articles[0].tagList).to.eql([])",
+							"})",
+							"",
+							"pm.test(\"should verify response author username\", () => {",
+							"   pm.expect(pm.response.json().articles[0].author.username).to.eql(usernameTest)",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Token {{tokenTest}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{urlApi}}/articles/",
+					"host": [
+						"{{urlApi}}"
+					],
+					"path": [
+						"articles",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "deleteArticle",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"verify code\", () => {",
+							"    pm.expect(pm.response.code).to.eql(204)",
+							"})",
+							"",
+							"pm.test(\"should verify response status \", () => {",
+							"    pm.expect(pm.response.status).to.eql(\"No Content\")",
+							"})",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"updatedArticleBody\", \"Updated body\");",
+							"pm.collectionVariables.set(\"updatedArticleDesc\", \"Updated description\");",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token {{tokenTest}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{urlApi}}/articles/{{slugTest}}",
+					"host": [
+						"{{urlApi}}"
+					],
+					"path": [
+						"articles",
+						"{{slugTest}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getArticlesAfterDelete",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const titleTest = pm.collectionVariables.get(\"titleTest\");",
+							"const slugTest = pm.collectionVariables.get(\"slugTest\");",
+							"",
+							"",
+							"pm.test(\"verify code\", () => {",
+							"    pm.expect(pm.response.code).to.eql(200)",
+							"})",
+							"",
+							"pm.test(\"should verify response status \", () => {",
+							"    pm.expect(pm.response.status).to.eql(\"OK\")",
+							"})",
+							"",
+							"pm.test(\"should verify response article title\", () => {",
+							"    pm.expect(pm.response.json().articles[0].title).not.to.eql(titleTest)",
+							"})",
+							"",
+							"pm.test(\"should verify response slug\", () => {",
+							"   pm.expect(pm.response.json().articles[0].slug).not.to.eql(slugTest)",
+							"})",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Token {{tokenTest}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{urlApi}}/articles/",
+					"host": [
+						"{{urlApi}}"
+					],
+					"path": [
+						"articles",
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "urlApi",
+			"value": "https://conduit-api.bondaracademy.com/api",
+			"type": "string"
+		},
+		{
+			"key": "emailTest",
+			"value": ""
+		},
+		{
+			"key": "passwordTest",
+			"value": ""
+		},
+		{
+			"key": "usernameTest",
+			"value": ""
+		},
+		{
+			"key": "tokenTest",
+			"value": ""
+		},
+		{
+			"key": "helpNumber",
+			"value": ""
+		},
+		{
+			"key": "titleTest",
+			"value": ""
+		},
+		{
+			"key": "descriptionTest",
+			"value": ""
+		},
+		{
+			"key": "bodyTest",
+			"value": ""
+		},
+		{
+			"key": "updatedArticleBody",
+			"value": ""
+		},
+		{
+			"key": "updatedArticleDesc",
+			"value": ""
+		},
+		{
+			"key": "emailDev",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "usernameDev",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "passwordDev",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

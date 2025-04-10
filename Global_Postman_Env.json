@@ -1,0 +1,21 @@
+{
+	"id": "922bd2e9-dca0-4eb3-88dc-fb0f27f00706",
+	"values": [
+		{
+			"key": "email",
+			"value": "zbogdancajanko1@gmail.com",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "password",
+			"value": "password123",
+			"type": "default",
+			"enabled": true
+		}
+	],
+	"name": "Globals",
+	"_postman_variable_scope": "globals",
+	"_postman_exported_at": "2025-03-27T16:40:15.118Z",
+	"_postman_exported_using": "Postman/10.24.27"
+}
